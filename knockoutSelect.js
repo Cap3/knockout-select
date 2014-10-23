@@ -153,6 +153,7 @@
 
         if (stateData.element.getAttribute('tabindex')) {
             stateData.captionElement.setAttribute('tabindex', stateData.element.getAttribute('tabindex'));
+            stateData.element.removeAttribute('tabindex')
         }
     }
 
