@@ -150,6 +150,10 @@
         stateData.captionElement.appendChild(arrowSpan);
         stateData.captionText.textContent = ko.unwrap(stateData.optionsCaption);
         stateData.captionElement.setAttribute('data-open', false);
+
+        if (stateData.element.getAttribute('tabindex')) {
+            stateData.captionElement.setAttribute('tabindex', stateData.element.getAttribute('tabindex'));
+        }
     }
 
     /**
