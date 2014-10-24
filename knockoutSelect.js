@@ -17,13 +17,14 @@
     }
 }(function (ko) {
     //region css
-    var dropDownSelectClass = 'drop-down-select';
-    var dropDownSelectButtonClass = 'drop-down-select-button';
-    var dropDownSelectContainerClass = 'drop-down-select-container';
-    var dropDownSelectArrowClass = 'drop-down-select-arrow';
-    var dropDownSelectRowClass = 'drop-down-select-row';
-    var dropDownSelectSelectedClass = 'drop-down-select-row-selected';
-    var dropDownSelectActiveClass = 'drop-down-select-row-active';
+    var prefix = 'knockout-select';
+    var dropDownSelectClass = prefix;
+    var dropDownSelectButtonClass = prefix + '-button';
+    var dropDownSelectContainerClass = prefix + '-container';
+    var dropDownSelectArrowClass = prefix + '-arrow';
+    var dropDownSelectRowClass = prefix + '-row';
+    var dropDownSelectSelectedClass = prefix + '-row-selected';
+    var dropDownSelectActiveClass = prefix + '-row-active';
     var zIndex = 9999;
     //endregion
 
@@ -150,6 +151,11 @@
         stateData.captionElement.appendChild(arrowSpan);
         stateData.captionText.textContent = ko.unwrap(stateData.optionsCaption);
         stateData.captionElement.setAttribute('data-open', false);
+
+        if (stateData.element.getAttribute('tabindex')) {
+            stateData.captionElement.setAttribute('tabindex', stateData.element.getAttribute('tabindex'));
+            stateData.element.removeAttribute('tabindex');
+        }
     }
 
     /**
@@ -481,8 +487,8 @@
     }
 
     /**
-     * returns the callback for the hover-index-changed event, which toggles the drop-down-active class for a vuísual
-     * hover effect
+     * returns the callback for the hover-index-changed event, which toggles the active class for a visual hover effect
+     *
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
