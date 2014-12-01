@@ -57,18 +57,19 @@
      */
 
     /**
+     * @param {Function} valueAccessor - the accessor function to the binding value
      * @param {object} allBindings - the other bindings bound to the element
      * @param {HTMLElement} element - the element this binding is bound to
      * @class
      */
-    function StateData (allBindings, element) {
+    function StateData (valueAccessor, allBindings, element) {
         return {
             captionElement: undefined,
             containerDiv: document.createElement('div'),
             captionText: undefined,
             element: element,
             options: allBindings.get('options'),
-            selectedOptions: allBindings.get('selectedOptions'),
+            selectedOptions: valueAccessor(),
             value: allBindings.get('value'),
             enable: allBindings.get('enable'),
             disable: allBindings.get('disable'),
@@ -756,11 +757,11 @@
      * adds this binding to the knockout bindingHandlers
      */
 
-    ko.bindingHandlers.knockoutSelect = {
+    ko.bindingHandlers.cap3Options = {
 
         init: function (element, valueAccessor, allBindings) {
 
-            var stateData = new StateData(allBindings, element);
+            var stateData = new StateData(valueAccessor, allBindings, element);
 
             isBindingAllowed(stateData);
 
