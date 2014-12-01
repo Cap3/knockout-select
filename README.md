@@ -3,7 +3,7 @@ knockout-select / cap3Options
 
 #Requirements#
 
-* Knockout v. 2.0.0
+* Knockout v. 2.3.0
 
 
 #Usage#
