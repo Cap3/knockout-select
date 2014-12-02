@@ -5,7 +5,7 @@
  * @author Cap3 GmbH - Kalle Ott
  */
 'use strict';
-(function (factory) {
+(function(factory) {
     if (typeof require === 'function' && typeof exports === 'object' && typeof module === 'object') {
         factory(require('knockout'), exports);
     }
@@ -15,7 +15,7 @@
     else {
         factory(window.ko);
     }
-}(function (ko) {
+}(function(ko) {
     //region css
     var prefix = 'knockout-select';
     var dropDownSelectClass = prefix;
@@ -62,7 +62,34 @@
      * @param {HTMLElement} element - the element this binding is bound to
      * @class
      */
-    function StateData (valueAccessor, allBindings, element) {
+    function StateData(valueAccessor, allBindings, element) {
+        /**
+         * Disposes this instance.
+         */
+        function dispose() {
+            this.captionElement = null;
+            this.containerDiv = null;
+            this.captionText = null;
+            this.element = null;
+            this.options = null;
+            this.selectedOptions = null;
+            this.value = null;
+            this.enable = null;
+            this.disable = null;
+            this.optionsCaption = null;
+            this.optionsText = null;
+            this.optionsValue = null;
+            this.multiple = null;
+            this.hoverIndex = null;
+
+            if (this.subscriptions) {
+                for (var i = 0; i < this.subscriptions.length; i++) {
+                    this.subscriptions[i].dispose();
+                }
+                this.subscriptions = null;
+            }
+        }
+
         return {
             captionElement: undefined,
             containerDiv: document.createElement('div'),
@@ -81,7 +108,9 @@
             hoverIndex: ko.observable(-1),
             maxIndex: -1,
             inside: false,
-            showBox: false
+            showBox: false,
+            subscriptions: [],
+            dispose: dispose
         };
     }
 
@@ -92,7 +121,7 @@
      * @param {observable | object | string} option - the object containing the option information
      * @returns {string}
      */
-    function getOptionsText (stateData, option) {
+    function getOptionsText(stateData, option) {
         if (option && stateData.optionsText && typeof(stateData.optionsText) === 'string') {
             return ko.unwrap(ko.unwrap(option)[stateData.optionsText]);
         }
@@ -110,11 +139,11 @@
      * @param {observable | object | string} option - the object containing the option information
      * @returns {*}
      */
-    function getOptionsValue (stateData, option) {
-        if (stateData.optionsValue && typeof(stateData.optionsValue ) === 'string') {
+    function getOptionsValue(stateData, option) {
+        if (stateData.optionsValue && typeof(stateData.optionsValue) === 'string') {
             return ko.unwrap(ko.unwrap(option)[stateData.optionsValue]);
         }
-        else if (stateData.optionsValue && typeof(stateData.optionsValue ) === 'function') {
+        else if (stateData.optionsValue && typeof(stateData.optionsValue) === 'function') {
             return stateData.optionsValue(ko.unwrap(ko.unwrap(option)));
         }
         else {
@@ -127,7 +156,7 @@
      * @param {HTMLElement} containerDiv - element to hold all select options
      * @param {HTMLElement} captionElement - element to show information about selection state and to open options container on click
      */
-    function applyContainerStyle (containerDiv, captionElement) {
+    function applyContainerStyle(containerDiv, captionElement) {
         captionElement.classList.add(dropDownSelectClass);
         captionElement.classList.add(dropDownSelectButtonClass);
         containerDiv.classList.add(dropDownSelectClass);
@@ -143,7 +172,7 @@
      * creates the button which opens the options container and replaces the normal select element
      * @param {StateData} stateData - object which holds all status information about the select element
      */
-    function createCaptionsElement (stateData) {
+    function createCaptionsElement(stateData) {
         stateData.captionElement = document.createElement('button');
         stateData.captionText = document.createElement('span');
         stateData.captionElement.appendChild(stateData.captionText);
@@ -165,7 +194,7 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {HTMLElement}
      */
-    function createOptionDiv (option, stateData) {
+    function createOptionDiv(option, stateData) {
         var div = document.createElement('div');
         div.textContent = getOptionsText(stateData, option);
         div.setAttribute('data-selected', false);
@@ -182,7 +211,7 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {string | undefined}
      */
-    function findOption (options, selectedValue, stateData) {
+    function findOption(options, selectedValue, stateData) {
         for (var i = 0; i < options.length; i++) {
             if (getOptionsValue(stateData, options[i]) === ko.unwrap(selectedValue)) {
                 return options[i];
@@ -197,7 +226,7 @@
      * @param {observable | object | string} option - option which has changed
      * @param optionDiv - representation of the option
      */
-    function styleOptionsDivMultiple (stateData, option, optionDiv) {
+    function styleOptionsDivMultiple(stateData, option, optionDiv) {
         if (ko.unwrap(stateData.selectedOptions).indexOf(getOptionsValue(stateData, option)) >= 0) {
             optionDiv.classList.add(dropDownSelectSelectedClass);
             optionDiv.setAttribute('data-selected', true);
@@ -215,7 +244,7 @@
      * @param {observable | object | string} option - option which has changed
      * @param {HTMLElement} optionDiv - representation of the option
      */
-    function styleOptionsDivSingle (stateData, option, optionDiv) {
+    function styleOptionsDivSingle(stateData, option, optionDiv) {
         if (ko.unwrap(stateData.value) === getOptionsValue(stateData, option)) {
             optionDiv.classList.add(dropDownSelectSelectedClass);
             optionDiv.setAttribute('data-selected', true);
@@ -231,7 +260,7 @@
      * sets the caption of the select element, only used when multiple flag is set
      * @param {StateData} stateData - object which holds all status information about the select element
      */
-    function setCaptionMultiple (stateData) {
+    function setCaptionMultiple(stateData) {
         switch (ko.unwrap(stateData.selectedOptions).length) {
             case 0:
                 stateData.captionText.textContent = ko.unwrap(stateData.optionsCaption);
@@ -250,7 +279,7 @@
      * initializes dropdown-container and caption-element with the actual options and status
      * @param {StateData} stateData - object which holds all status information about the select element
      */
-    function initializeDropDown (stateData) {
+    function initializeDropDown(stateData) {
         while (stateData.containerDiv.firstChild) {
             stateData.containerDiv.removeChild(stateData.containerDiv.firstChild);
         }
@@ -258,7 +287,7 @@
         if (ko.unwrap(stateData.options).length > 0) {
             var tmpDiv;
 
-            ko.unwrap(stateData.options).forEach(function (option) {
+            ko.unwrap(stateData.options).forEach(function(option) {
                 tmpDiv = createOptionDiv(option, stateData);
                 stateData.containerDiv.appendChild(tmpDiv);
                 if (stateData.multiple) {
@@ -281,7 +310,7 @@
      * @param {observable | object | string} option - option which has changed
      * @param {HTMLElement} element - element which was clicked
      */
-    function selectItemMultiple (stateData, option, element) {
+    function selectItemMultiple(stateData, option, element) {
         var i,
             tmpSelected;
 
@@ -307,7 +336,7 @@
      * @param {observable | object | string} option - option which got selected by the user
      * @param {NodeList} nodes - the childnodes of the options-container
      */
-    function selectItemSingle (stateData, option, nodes) {
+    function selectItemSingle(stateData, option, nodes) {
         if (ko.isObservable(stateData.value)) {
 
             stateData.value(getOptionsValue(stateData, option));
@@ -335,7 +364,7 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {boolean} true if binding is allowed
      */
-    function isBindingAllowed (stateData) {
+    function isBindingAllowed(stateData) {
         if (stateData.multiple &&
             (stateData.options === undefined || stateData.selectedOptions === undefined)) {
             throw 'with multiple set, options and selectedOptions binding must be valid for this dropDownSelect-binding to work';
@@ -367,8 +396,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onRowHover (stateData) {
-        return function (event) {
+    function onRowHover(stateData) {
+        return function(event) {
             var elem = event.target || event.srcElement;
             stateData.hoverIndex(Array.prototype.indexOf.call(stateData.containerDiv.childNodes, elem));
             event.stopPropagation();
@@ -380,8 +409,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onUpArrowPressed (stateData) {
-        return function () {
+    function onUpArrowPressed(stateData) {
+        return function() {
             if (stateData.maxIndex < 0) {
                 return;
             }
@@ -391,7 +420,7 @@
             else {
                 stateData.hoverIndex(stateData.hoverIndex() - 1);
             }
-            if(stateData.hoverIndex() >= 0) {
+            if (stateData.hoverIndex() >= 0) {
                 stateData.containerDiv.childNodes[stateData.hoverIndex()].scrollIntoView(false);
             }
         };
@@ -402,8 +431,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onDownArrowPressed (stateData) {
-        return function () {
+    function onDownArrowPressed(stateData) {
+        return function() {
             if (stateData.maxIndex < 0) {
                 return;
             }
@@ -418,7 +447,7 @@
             else {
                 stateData.hoverIndex(stateData.hoverIndex() + 1);
             }
-            if(stateData.hoverIndex() >= 0) {
+            if (stateData.hoverIndex() >= 0) {
                 stateData.containerDiv.childNodes[stateData.hoverIndex()].scrollIntoView(false);
             }
         };
@@ -429,8 +458,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onSelectPressed (stateData) {
-        return function (event) {
+    function onSelectPressed(stateData) {
+        return function(event) {
             // catch firefox specific keyboard event to get same behavior in every browser
             if (event.mozInputSource === 6) {
                 return;
@@ -450,7 +479,7 @@
                 stateData.size = parseInt(stateData.element.getAttribute('size'));
                 if (stateData.size) {
                     stateData.containerDiv.style.height = stateData.containerDiv.firstChild.getBoundingClientRect().height *
-                                                          stateData.size + 'px';
+                        stateData.size + 'px';
                 }
                 else {
                     stateData.containerDiv.style.height = 'auto';
@@ -464,8 +493,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onMouseOut (stateData) {
-        return function (event) {
+    function onMouseOut(stateData) {
+        return function(event) {
 
             var e = event.toElement || event.relatedTarget;
             if (e.parentNode === stateData.containerDiv ||
@@ -481,8 +510,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onMouseEnter (stateData) {
-        return function () {
+    function onMouseEnter(stateData) {
+        return function() {
             stateData.inside = true;
         };
     }
@@ -493,8 +522,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onHoverChanged (stateData) {
-        return function (index) {
+    function onHoverChanged(stateData) {
+        return function(index) {
             stateData.captionElement.focus();
             var nodes = stateData.containerDiv.childNodes;
             for (var i = 0; i < nodes.length; i++) {
@@ -513,8 +542,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onHideOptions (stateData) {
-        return function () {
+    function onHideOptions(stateData) {
+        return function() {
             if (!stateData.inside) {
                 stateData.showBox = false;
                 stateData.containerDiv.style.display = 'none';
@@ -531,8 +560,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onItemSelect (stateData) {
-        return function () {
+    function onItemSelect(stateData) {
+        return function() {
             var index = stateData.hoverIndex();
 
             if (index < 0 || !stateData.showBox) {
@@ -563,8 +592,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onKeyDown (stateData) {
-        return function (event) {
+    function onKeyDown(stateData) {
+        return function(event) {
             event = event || window.event;
             switch (event.keyCode) {
                 case 38: // up-arrow
@@ -596,8 +625,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onOptionsChange (stateData) {
-        return function () {
+    function onOptionsChange(stateData) {
+        return function() {
             initializeDropDown(stateData);
         };
     }
@@ -608,8 +637,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onEnable (stateData) {
-        return function (enable) {
+    function onEnable(stateData) {
+        return function(enable) {
             stateData.captionElement.disabled = !enable;
         };
     }
@@ -620,8 +649,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onDisable (stateData) {
-        return function (disable) {
+    function onDisable(stateData) {
+        return function(disable) {
             stateData.captionElement.disabled = disable;
         };
     }
@@ -631,10 +660,10 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onValueChanged (stateData) {
-        return function (value) {
+    function onValueChanged(stateData) {
+        return function(value) {
             var option = findOption(ko.unwrap(stateData.options), ko.unwrap(value), stateData);
-            if(value === undefined) {
+            if (value === undefined) {
                 stateData.captionText.textContent = ko.unwrap(stateData.optionsCaption);
             }
             else {
@@ -660,9 +689,9 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onSelectedOptionsChanged (stateData) {
-        return function () {
-            ko.unwrap(stateData.options).forEach(function (option, index) {
+    function onSelectedOptionsChanged(stateData) {
+        return function() {
+            ko.unwrap(stateData.options).forEach(function(option, index) {
                 styleOptionsDivMultiple(stateData, option, stateData.containerDiv.childNodes[index]);
             });
             setCaptionMultiple(stateData);
@@ -674,8 +703,8 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      * @returns {Function}
      */
-    function onOptionsCaptionChanged (stateData) {
-        return function (value) {
+    function onOptionsCaptionChanged(stateData) {
+        return function(value) {
             if (stateData.multiple && stateData.selectedOptions().length === 0) {
                 stateData.captionText.textContent = value;
             }
@@ -692,7 +721,7 @@
      * initializes all callbacks
      * @param {StateData} stateData - object which holds all status information about the select element
      */
-    function initCallbacks (stateData) {
+    function initCallbacks(stateData) {
         stateData.captionElement.onkeydown = onKeyDown(stateData);
         stateData.captionElement.onclick = onSelectPressed(stateData);
         stateData.containerDiv.onmouseenter = onMouseEnter(stateData);
@@ -704,7 +733,7 @@
      * initializes all DOM Elements
      * @param {StateData} stateData - object which holds all status information about the select element
      */
-    function initDomElements (stateData) {
+    function initDomElements(stateData) {
         var parent = stateData.element.parentNode,
             surroundingDiv = document.createElement('div');
 
@@ -724,34 +753,66 @@
      * initializes all necessary subscriptions on possible observables
      * @param {StateData} stateData - object which holds all status information about the select element
      */
-    function initSubscriptions (stateData) {
-        stateData.hoverIndex.subscribe(onHoverChanged(stateData));
+    function initSubscriptions(stateData) {
+            stateData.subscriptions
+                .push(stateData.hoverIndex.subscribe(onHoverChanged(stateData)));
 
-        if (ko.isObservable(stateData.options)) {
-            stateData.options.subscribe(onOptionsChange(stateData));
-        }
-        if (stateData.enable !== undefined) {
-            onEnable(stateData)(stateData.enable);
-            if (ko.isObservable(stateData.enable)) {
-                stateData.enable.subscribe(onEnable(stateData));
+            if (ko.isObservable(stateData.options)) {
+                stateData.subscriptions
+                    .push(stateData.options.subscribe(onOptionsChange(stateData)));
+            }
+            if (stateData.enable !== undefined) {
+                onEnable(stateData)(stateData.enable);
+                if (ko.isObservable(stateData.enable)) {
+                    stateData.subscriptions
+                        .push(stateData.enable.subscribe(onEnable(stateData)));
+                }
+            }
+            if (stateData.disable !== undefined) {
+                onDisable(stateData)(stateData.disable);
+                if (ko.isObservable(stateData.disable)) {
+                    stateData.subscriptions
+                        .push(stateData.disable.subscribe(onDisable(stateData)));
+                }
+            }
+            if (stateData.value !== undefined && !stateData.multiple) {
+                stateData.subscriptions
+                    .push(stateData.value.subscribe(onValueChanged(stateData)));
+            }
+            if (stateData.selectedOptions !== undefined && stateData.multiple) {
+                stateData.subscriptions
+                    .push(stateData.selectedOptions
+                        .subscribe(onSelectedOptionsChanged(stateData)));
+            }
+            if (ko.isObservable(stateData.optionsCaption)) {
+                stateData.subscriptions
+                    .push(stateData.optionsCaption
+                        .subscribe(onOptionsCaptionChanged(stateData)));
             }
         }
-        if (stateData.disable !== undefined) {
-            onDisable(stateData)(stateData.disable);
-            if (ko.isObservable(stateData.disable)) {
-                stateData.disable.subscribe(onDisable(stateData));
-            }
-        }
-        if (stateData.value !== undefined && !stateData.multiple) {
-            stateData.value.subscribe(onValueChanged(stateData));
-        }
-        if (stateData.selectedOptions !== undefined && stateData.multiple) {
-            stateData.selectedOptions.subscribe(onSelectedOptionsChanged(stateData));
-        }
-        if (ko.isObservable(stateData.optionsCaption)) {
-            stateData.optionsCaption.subscribe(onOptionsCaptionChanged(stateData));
-        }
+        //endregion
+
+    //region Dispose
+    /**
+     * Removes all event listeners from the dom element.
+     *
+     */
+    function clearCallbacks(stateData) {
+        stateData.captionElement.onkeydown = null;
+        stateData.captionElement.onclick = null;
+        stateData.containerDiv.onmouseenter = null;
+        stateData.captionElement.onblur = null;
+        stateData.containerDiv.onmouseout = null;
     }
+
+    /**
+     * Disposes the instance related to the specified state data.
+     */
+    function dispose(stateData) {
+            clearCallbacks(stateData);
+            stateData.dispose.call(stateData);
+        }
+        //endregion
 
     /**
      * adds this binding to the knockout bindingHandlers
@@ -759,7 +820,7 @@
 
     ko.bindingHandlers.cap3Options = {
 
-        init: function (element, valueAccessor, allBindings) {
+        init: function(element, valueAccessor, allBindings) {
 
             var stateData = new StateData(valueAccessor, allBindings, element);
 
@@ -772,6 +833,11 @@
 
             initializeDropDown(stateData);
             applyContainerStyle(stateData.containerDiv, stateData.captionElement);
+
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+                dispose(stateData);
+                stateData = undefined;
+            });
         }
 
     };
