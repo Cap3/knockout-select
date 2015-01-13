@@ -662,6 +662,9 @@
      */
     function onValueChanged(stateData) {
         return function(value) {
+            if(value === undefined) {
+                return;
+            }
             var option = findOption(ko.unwrap(stateData.options), ko.unwrap(value), stateData);
             if (value === undefined) {
                 stateData.captionText.textContent = ko.unwrap(stateData.optionsCaption);
