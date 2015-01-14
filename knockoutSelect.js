@@ -338,7 +338,6 @@
      */
     function selectItemSingle(stateData, option, nodes) {
         if (ko.isObservable(stateData.value)) {
-
             stateData.value(getOptionsValue(stateData, option));
         }
         else {
@@ -479,7 +478,7 @@
                 stateData.size = parseInt(stateData.element.getAttribute('size'));
                 if (stateData.size) {
                     stateData.containerDiv.style.height = stateData.containerDiv.firstChild.getBoundingClientRect().height *
-                        stateData.size + 'px';
+                                                          stateData.size + 'px';
                 }
                 else {
                     stateData.containerDiv.style.height = 'auto';
@@ -754,43 +753,43 @@
      * @param {StateData} stateData - object which holds all status information about the select element
      */
     function initSubscriptions(stateData) {
-            stateData.subscriptions
-                .push(stateData.hoverIndex.subscribe(onHoverChanged(stateData)));
+        stateData.subscriptions
+            .push(stateData.hoverIndex.subscribe(onHoverChanged(stateData)));
 
-            if (ko.isObservable(stateData.options)) {
+        if (ko.isObservable(stateData.options)) {
+            stateData.subscriptions
+                .push(stateData.options.subscribe(onOptionsChange(stateData)));
+        }
+        if (stateData.enable !== undefined) {
+            onEnable(stateData)(stateData.enable);
+            if (ko.isObservable(stateData.enable)) {
                 stateData.subscriptions
-                    .push(stateData.options.subscribe(onOptionsChange(stateData)));
-            }
-            if (stateData.enable !== undefined) {
-                onEnable(stateData)(stateData.enable);
-                if (ko.isObservable(stateData.enable)) {
-                    stateData.subscriptions
-                        .push(stateData.enable.subscribe(onEnable(stateData)));
-                }
-            }
-            if (stateData.disable !== undefined) {
-                onDisable(stateData)(stateData.disable);
-                if (ko.isObservable(stateData.disable)) {
-                    stateData.subscriptions
-                        .push(stateData.disable.subscribe(onDisable(stateData)));
-                }
-            }
-            if (stateData.value !== undefined && !stateData.multiple) {
-                stateData.subscriptions
-                    .push(stateData.value.subscribe(onValueChanged(stateData)));
-            }
-            if (stateData.selectedOptions !== undefined && stateData.multiple) {
-                stateData.subscriptions
-                    .push(stateData.selectedOptions
-                        .subscribe(onSelectedOptionsChanged(stateData)));
-            }
-            if (ko.isObservable(stateData.optionsCaption)) {
-                stateData.subscriptions
-                    .push(stateData.optionsCaption
-                        .subscribe(onOptionsCaptionChanged(stateData)));
+                    .push(stateData.enable.subscribe(onEnable(stateData)));
             }
         }
-        //endregion
+        if (stateData.disable !== undefined) {
+            onDisable(stateData)(stateData.disable);
+            if (ko.isObservable(stateData.disable)) {
+                stateData.subscriptions
+                    .push(stateData.disable.subscribe(onDisable(stateData)));
+            }
+        }
+        if (stateData.value !== undefined && !stateData.multiple) {
+            stateData.subscriptions
+                .push(stateData.value.subscribe(onValueChanged(stateData)));
+        }
+        if (stateData.selectedOptions !== undefined && stateData.multiple) {
+            stateData.subscriptions
+                .push(stateData.selectedOptions
+                    .subscribe(onSelectedOptionsChanged(stateData)));
+        }
+        if (ko.isObservable(stateData.optionsCaption)) {
+            stateData.subscriptions
+                .push(stateData.optionsCaption
+                    .subscribe(onOptionsCaptionChanged(stateData)));
+        }
+    }
+    //endregion
 
     //region Dispose
     /**
@@ -809,10 +808,10 @@
      * Disposes the instance related to the specified state data.
      */
     function dispose(stateData) {
-            clearCallbacks(stateData);
-            stateData.dispose.call(stateData);
-        }
-        //endregion
+        clearCallbacks(stateData);
+        stateData.dispose.call(stateData);
+    }
+    //endregion
 
     /**
      * adds this binding to the knockout bindingHandlers
@@ -823,6 +822,8 @@
         init: function(element, valueAccessor, allBindings) {
 
             var stateData = new StateData(valueAccessor, allBindings, element);
+
+            ko.cleanNode(element);
 
             isBindingAllowed(stateData);
 
