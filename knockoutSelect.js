@@ -97,7 +97,7 @@
             element: element,
             options: valueAccessor(),
             selectedOptions: allBindings()['selectedOptions'],
-            value: allBindings()['value'],
+            value: allBindings()['cap3Value'],
             enable: allBindings()['enable'],
             disable: allBindings()['disable'],
             optionsCaption: allBindings()['optionsCaption'],
@@ -822,8 +822,6 @@
         init: function(element, valueAccessor, allBindings) {
 
             var stateData = new StateData(valueAccessor, allBindings, element);
-
-            ko.cleanNode(element);
 
             isBindingAllowed(stateData);
 
