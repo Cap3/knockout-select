@@ -40,7 +40,6 @@
   cursor: pointer;
   text-align: left;
   font-size: inherit;
-  overflow-wrap: break-word;
 }
 .knockout-select-button[disabled] {
   background-color: #c8c8c8;
