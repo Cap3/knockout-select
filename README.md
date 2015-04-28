@@ -15,7 +15,7 @@ support easy migration.
  * Include (minified) knockout-select/cap3Options-binding
  * Use as custom binding:
 
-        <select data-binding="cap3Options: myOptions, value: myValue></select>
+        <select data-binding="cap3Options: myOptions, cap3Value: myValue></select>
 
 #Examples#
 
