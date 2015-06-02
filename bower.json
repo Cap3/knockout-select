@@ -1,5 +1,5 @@
 {
-    "name": "knockout-select",
+    "name": "knockoutSelect",
     "version": "0.1.0",
     "main": [
 		"knockoutSelect.js",
@@ -21,7 +21,7 @@
     },
 	"repository": {
         "type": "git",
-        "url": "git://github.com:Cap3/knockout-select.git"
+        "url": "git://github.com/Cap3/knockout-select.git"
     },
 	"homepage": "https://github.com/Cap3/knockout-select"
 }
