@@ -6,6 +6,13 @@ for different browsers (IE, Firefox, Chrome).
 The binding conforms to the API of the original knockout options-binding to 
 support easy migration.
 
+## Current Version
+
+### 0.1.0
+
+#### Install with bower
+bower install knockoutSelect
+
 #Requirements#
 
 * Knockout v. 2.3.0
