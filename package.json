@@ -1,0 +1,23 @@
+{
+    "name": "knockoutSelect",
+    "version": "0.1.2",
+    "main": "knockoutSelect.js",
+    "description": "knockout based select options binding with styling options, for single- and multipleselect elements",
+    "keywords": [
+        "css",
+        "less",
+        "web",
+        "styled",
+        "select",
+        "dropdown"
+    ],
+    "author": "Cap3 GmbH - Kalle Ott",
+    "license": "MIT",
+    "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-cli": "^0.1.13",
+        "grunt-contrib-less": "^1.0.1",
+        "grunt-contrib-uglify": "^0.9.1",
+        "grunt-version": "^1.0.0"
+    }
+}

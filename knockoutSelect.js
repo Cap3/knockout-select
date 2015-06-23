@@ -5,7 +5,7 @@
  * @author Cap3 GmbH - Kalle Ott
  */
 'use strict';
-(function(factory) {
+(function (factory) {
     if (typeof require === 'function' && typeof exports === 'object' && typeof module === 'object') {
         factory(require('knockout'), exports);
     }
@@ -15,8 +15,8 @@
     else {
         factory(window.ko);
     }
-}(function(ko) {
-    //region css
+} (function (ko) {
+    //#region css
     var prefix = 'knockout-select';
     var dropDownSelectClass = prefix;
     var dropDownSelectButtonClass = prefix + '-button';
@@ -26,12 +26,12 @@
     var dropDownSelectSelectedClass = prefix + '-row-selected';
     var dropDownSelectActiveClass = prefix + '-row-active';
     var zIndex = 9999;
-    //endregion
+    //#endregion
 
-    //region strings
+    //#region strings
     var pleaseChoose = 'Choose...';
     var elementsChosen = ' items selected';
-    //endregion
+    //#endregion
 
     /**
      * @typedef {object} StateData
@@ -90,31 +90,53 @@
             }
         }
 
-        return {
-            captionElement: undefined,
-            containerDiv: document.createElement('div'),
-            captionText: undefined,
-            element: element,
-            options: valueAccessor(),
-            selectedOptions: allBindings()['selectedOptions'],
-            value: allBindings()['cap3Value'],
-            enable: allBindings()['enable'],
-            disable: allBindings()['disable'],
-            optionsCaption: allBindings()['optionsCaption'],
-            optionsText: allBindings()['optionsText'],
-            optionsValue: allBindings()['optionsValue'],
-            multiple: element.hasAttribute('multiple'),
-            size: parseInt(element.getAttribute('size')),
-            hoverIndex: ko.observable(-1),
-            maxIndex: -1,
-            inside: false,
-            showBox: false,
-            subscriptions: [],
-            dispose: dispose
-        };
+        this.captionElement = undefined;
+        this.containerDiv = document.createElement('div');
+        this.captionText = undefined;
+        this.element = element;
+        this.options = valueAccessor();
+        this.selectedOptions = allBindings()['selectedOptions'];
+        this.value = allBindings()['cap3Value'];
+        this.enable = allBindings()['enable'];
+        this.disable = allBindings()['disable'];
+        this.optionsCaption = allBindings()['optionsCaption'];
+        this.optionsText = allBindings()['optionsText'];
+        this.optionsValue = allBindings()['optionsValue'];
+        this.multiple = element.hasAttribute('multiple');
+        this.size = parseInt(element.getAttribute('size'));
+        this.hoverIndex = ko.observable(-1);
+        this.maxIndex = -1;
+        this.inside = false;
+        this.showBox = false;
+        this.subscriptions = [];
+        this.dispose = dispose;
+    }
+    /**
+     * @typedef {object} Point
+     * @property {number} x - x-coordinate
+     * @property {number} y - y-coordinate
+     */
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
     }
 
-    //region functions
+    //#region functions
+    //#region helper functions
+
+    /**
+     * calculates the distance between to 2d points
+     * @param {Point} p1 - first point
+     * @param {Point} p2 - second point
+     * @returns {number}
+     */
+    function distance(p1, p2) {
+        var xd = p2.x - p1.x;
+        var yd = p2.y - p1.y;
+        return Math.sqrt(xd * xd + yd * yd);
+    }
+    //#endregion
+
     /**
      * gets the text representation of the option
      * @param {StateData} stateData - object which holds all status information about the select element
@@ -122,10 +144,10 @@
      * @returns {string}
      */
     function getOptionsText(stateData, option) {
-        if (option && stateData.optionsText && typeof(stateData.optionsText) === 'string') {
+        if (option && stateData.optionsText && typeof (stateData.optionsText) === 'string') {
             return ko.unwrap(ko.unwrap(option)[stateData.optionsText]);
         }
-        else if (stateData.optionsText && typeof(stateData.optionsText) === 'function') {
+        else if (stateData.optionsText && typeof (stateData.optionsText) === 'function') {
             return stateData.optionsText(ko.unwrap(ko.unwrap(option)));
         }
         else {
@@ -140,10 +162,10 @@
      * @returns {*}
      */
     function getOptionsValue(stateData, option) {
-        if (stateData.optionsValue && typeof(stateData.optionsValue) === 'string') {
+        if (stateData.optionsValue && typeof (stateData.optionsValue) === 'string') {
             return ko.unwrap(ko.unwrap(option)[stateData.optionsValue]);
         }
-        else if (stateData.optionsValue && typeof(stateData.optionsValue) === 'function') {
+        else if (stateData.optionsValue && typeof (stateData.optionsValue) === 'function') {
             return stateData.optionsValue(ko.unwrap(ko.unwrap(option)));
         }
         else {
@@ -195,12 +217,41 @@
      * @returns {HTMLElement}
      */
     function createOptionDiv(option, stateData) {
+
         var div = document.createElement('div');
         div.textContent = getOptionsText(stateData, option);
-        div.setAttribute('data-selected', false);
+        div.setAttribute('data-selected', 'false');
         div.classList.add(dropDownSelectRowClass);
         div.onmouseover = onRowHover(stateData);
         div.onclick = onItemSelect(stateData);
+        var touchTimer = -1;
+        var touchStart = new Point(-1, -1);
+
+        div.ontouchstart = function (event) {
+            if (event.touches.length === 1) {
+                touchStart.x = event.touches[0].pageX;
+                touchStart.y = event.touches[0].pageY;
+                touchTimer = event.timeStamp || new Date().getTime();
+                event.stopPropagation();
+                return onRowHover(stateData)(event);;
+            }
+            stateData.hoverIndex(-1);
+            return true;
+        };
+
+        div.ontouchend = function (event) {
+            if (event.touches.length === 0 && event.changedTouches.length === 1) {
+                var touchEnd = new Point(event.changedTouches[0].pageX, event.changedTouches[0].pageY);
+                var movedDistance = distance(touchStart, touchEnd);
+                var endTime = event.timeStamp || new Date().getTime();
+                if (endTime - touchTimer < 1000 && movedDistance < 10) {
+                    event.stopPropagation();
+                    return onItemSelect(stateData)();
+                }
+            }
+            stateData.hoverIndex(-1);
+            return true;
+        };
         return div;
     }
 
@@ -245,7 +296,8 @@
      * @param {HTMLElement} optionDiv - representation of the option
      */
     function styleOptionsDivSingle(stateData, option, optionDiv) {
-        if (ko.unwrap(stateData.value) === getOptionsValue(stateData, option)) {
+        var newValue = getOptionsValue(stateData, option);
+        if (newValue && newValue === ko.unwrap(stateData.value)) {
             optionDiv.classList.add(dropDownSelectSelectedClass);
             optionDiv.setAttribute('data-selected', true);
             stateData.captionText.textContent = getOptionsText(stateData, option);
@@ -287,7 +339,7 @@
         if (ko.unwrap(stateData.options).length > 0) {
             var tmpDiv;
 
-            ko.unwrap(stateData.options).forEach(function(option) {
+            ko.unwrap(stateData.options).forEach(function (option) {
                 tmpDiv = createOptionDiv(option, stateData);
                 stateData.containerDiv.appendChild(tmpDiv);
                 if (stateData.multiple) {
@@ -372,15 +424,15 @@
             throw 'without multiple set, options and value binding must be valid for this dropDownSelect-binding to work';
         }
         if (stateData.optionsText !== undefined &&
-            (typeof(stateData.optionsText) !== 'string' && typeof(stateData.optionsText) !== 'function')) {
+            (typeof (stateData.optionsText) !== 'string' && typeof (stateData.optionsText) !== 'function')) {
             throw 'if optionsText is set it must be a valid string describing a property name';
         }
         if (stateData.optionsValue !== undefined &&
-            (typeof(stateData.optionsValue) !== 'string' && typeof(stateData.optionsValue) !== 'function')) {
+            (typeof (stateData.optionsValue) !== 'string' && typeof (stateData.optionsValue) !== 'function')) {
             throw 'if optionsValue is set it must be a valid string describing a property name';
         }
         if (stateData.optionsCaption !== undefined &&
-            (typeof(stateData.optionsCaption) !== 'string' && !ko.isObservable(stateData.optionsCaption))) {
+            (typeof (stateData.optionsCaption) !== 'string' && !ko.isObservable(stateData.optionsCaption))) {
             throw 'if optionsCaption is set it must be a valid string';
         }
         if (stateData.optionsCaption === undefined) {
@@ -396,10 +448,11 @@
      * @returns {Function}
      */
     function onRowHover(stateData) {
-        return function(event) {
+        return function (event) {
             var elem = event.target || event.srcElement;
             stateData.hoverIndex(Array.prototype.indexOf.call(stateData.containerDiv.childNodes, elem));
             event.stopPropagation();
+            return true;
         };
     }
 
@@ -409,7 +462,7 @@
      * @returns {Function}
      */
     function onUpArrowPressed(stateData) {
-        return function() {
+        return function () {
             if (stateData.maxIndex < 0) {
                 return;
             }
@@ -431,7 +484,7 @@
      * @returns {Function}
      */
     function onDownArrowPressed(stateData) {
-        return function() {
+        return function () {
             if (stateData.maxIndex < 0) {
                 return;
             }
@@ -458,7 +511,7 @@
      * @returns {Function}
      */
     function onSelectPressed(stateData) {
-        return function(event) {
+        return function (event) {
             // catch firefox specific keyboard event to get same behavior in every browser
             if (event.mozInputSource === 6) {
                 return;
@@ -478,7 +531,7 @@
                 stateData.size = parseInt(stateData.element.getAttribute('size'));
                 if (stateData.size) {
                     stateData.containerDiv.style.height = stateData.containerDiv.firstChild.getBoundingClientRect().height *
-                                                          stateData.size + 'px';
+                    stateData.size + 'px';
                 }
                 else {
                     stateData.containerDiv.style.height = 'auto';
@@ -493,7 +546,7 @@
      * @returns {Function}
      */
     function onMouseOut(stateData) {
-        return function(event) {
+        return function (event) {
 
             var e = event.toElement || event.relatedTarget;
             if (e.parentNode === stateData.containerDiv ||
@@ -510,7 +563,7 @@
      * @returns {Function}
      */
     function onMouseEnter(stateData) {
-        return function() {
+        return function () {
             stateData.inside = true;
         };
     }
@@ -522,7 +575,7 @@
      * @returns {Function}
      */
     function onHoverChanged(stateData) {
-        return function(index) {
+        return function (index) {
             stateData.captionElement.focus();
             var nodes = stateData.containerDiv.childNodes;
             for (var i = 0; i < nodes.length; i++) {
@@ -542,7 +595,7 @@
      * @returns {Function}
      */
     function onHideOptions(stateData) {
-        return function() {
+        return function () {
             if (!stateData.inside) {
                 stateData.showBox = false;
                 stateData.containerDiv.style.display = 'none';
@@ -560,11 +613,11 @@
      * @returns {Function}
      */
     function onItemSelect(stateData) {
-        return function() {
+        return function () {
             var index = stateData.hoverIndex();
 
             if (index < 0 || !stateData.showBox) {
-                return;
+                return false;
             }
 
             var selected = ko.unwrap(ko.unwrap(stateData.options)[index]),
@@ -581,6 +634,7 @@
                 stateData.inside = false;
                 onHideOptions(stateData)();
             }
+            return false;
         };
     }
 
@@ -592,7 +646,7 @@
      * @returns {Function}
      */
     function onKeyDown(stateData) {
-        return function(event) {
+        return function (event) {
             event = event || window.event;
             switch (event.keyCode) {
                 case 38: // up-arrow
@@ -625,7 +679,7 @@
      * @returns {Function}
      */
     function onOptionsChange(stateData) {
-        return function() {
+        return function () {
             initializeDropDown(stateData);
         };
     }
@@ -637,7 +691,7 @@
      * @returns {Function}
      */
     function onEnable(stateData) {
-        return function(enable) {
+        return function (enable) {
             stateData.captionElement.disabled = !enable;
         };
     }
@@ -649,7 +703,7 @@
      * @returns {Function}
      */
     function onDisable(stateData) {
-        return function(disable) {
+        return function (disable) {
             stateData.captionElement.disabled = disable;
         };
     }
@@ -660,7 +714,7 @@
      * @returns {Function}
      */
     function onValueChanged(stateData) {
-        return function(value) {
+        return function (value) {
             var option = findOption(ko.unwrap(stateData.options), ko.unwrap(value), stateData);
             if (value === undefined) {
                 stateData.captionText.textContent = ko.unwrap(stateData.optionsCaption);
@@ -671,7 +725,7 @@
             var nodes = stateData.containerDiv.childNodes;
             var index = ko.unwrap(stateData.options).indexOf(option);
             for (var i = 0; i < nodes.length; i++) {
-                if (i === index) {
+                if (value && i === index) {
                     nodes[i].classList.add(dropDownSelectSelectedClass);
                     nodes[i].setAttribute('data-selected', true);
                 }
@@ -689,8 +743,8 @@
      * @returns {Function}
      */
     function onSelectedOptionsChanged(stateData) {
-        return function() {
-            ko.unwrap(stateData.options).forEach(function(option, index) {
+        return function () {
+            ko.unwrap(stateData.options).forEach(function (option, index) {
                 styleOptionsDivMultiple(stateData, option, stateData.containerDiv.childNodes[index]);
             });
             setCaptionMultiple(stateData);
@@ -703,7 +757,7 @@
      * @returns {Function}
      */
     function onOptionsCaptionChanged(stateData) {
-        return function(value) {
+        return function (value) {
             if (stateData.multiple && stateData.selectedOptions().length === 0) {
                 stateData.captionText.textContent = value;
             }
@@ -713,9 +767,9 @@
         };
     }
 
-    //endregion
+    //#endregion
 
-    //region init
+    //#region init
     /**
      * initializes all callbacks
      * @param {StateData} stateData - object which holds all status information about the select element
@@ -741,7 +795,7 @@
         parent.replaceChild(surroundingDiv, stateData.element);
 
         stateData.containerDiv.style.display = 'none';
-        surroundingDiv.position = 'relative';
+        surroundingDiv.style.position = 'relative';
         stateData.element.style.display = 'none';
         surroundingDiv.appendChild(stateData.element);
         surroundingDiv.appendChild(stateData.captionElement);
@@ -781,17 +835,17 @@
         if (stateData.selectedOptions !== undefined && stateData.multiple) {
             stateData.subscriptions
                 .push(stateData.selectedOptions
-                    .subscribe(onSelectedOptionsChanged(stateData)));
+                .subscribe(onSelectedOptionsChanged(stateData)));
         }
         if (ko.isObservable(stateData.optionsCaption)) {
             stateData.subscriptions
                 .push(stateData.optionsCaption
-                    .subscribe(onOptionsCaptionChanged(stateData)));
+                .subscribe(onOptionsCaptionChanged(stateData)));
         }
     }
-    //endregion
+    //#endregion
 
-    //region Dispose
+    //#region Dispose
     /**
      * Removes all event listeners from the dom element.
      *
@@ -811,7 +865,7 @@
         clearCallbacks(stateData);
         stateData.dispose.call(stateData);
     }
-    //endregion
+    //#endregion
 
     /**
      * adds this binding to the knockout bindingHandlers
@@ -819,7 +873,7 @@
 
     ko.bindingHandlers.cap3Options = {
 
-        init: function(element, valueAccessor, allBindings) {
+        init: function (element, valueAccessor, allBindings) {
 
             var stateData = new StateData(valueAccessor, allBindings, element);
 
@@ -833,7 +887,7 @@
             initializeDropDown(stateData);
             applyContainerStyle(stateData.containerDiv, stateData.captionElement);
 
-            ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
                 dispose(stateData);
                 stateData = undefined;
             });
@@ -841,5 +895,5 @@
 
     };
 
-    //endregion
+    //#endregion
 }));

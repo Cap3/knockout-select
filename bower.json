@@ -1,6 +1,6 @@
 {
     "name": "knockoutSelect",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "main": [
 		"knockoutSelect.js",
 		"style.css"
@@ -10,11 +10,18 @@
         "css",
         "less",
         "web",
-        "styled select"
+        "styled",
+        "select",
+        "dropdown"
     ],
+    "license": "MIT",
 	"moduleType": [ "amd" ],
+    "authors": [
+        "Cap3 GmbH - Kalle Ott"
+    ],
     "ignore": [
-        ".gitignore"
+        ".gitignore",
+        "node_modules"
     ],
     "dependencies": {
         "knockout": ">=2.3.0"
