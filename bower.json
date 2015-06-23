@@ -1,34 +1,42 @@
 {
-    "name": "knockoutSelect",
-    "version": "0.1.2",
-    "main": [
-		"knockoutSelect.js",
-		"style.css"
-	],
-    "description": "knockout based select options binding with styling options, for single- and multipleselect elements",
-    "keywords": [
-        "css",
-        "less",
-        "web",
-        "styled",
-        "select",
-        "dropdown"
-    ],
-    "license": "MIT",
-	"moduleType": [ "amd" ],
-    "authors": [
-        "Cap3 GmbH - Kalle Ott"
-    ],
-    "ignore": [
-        ".gitignore",
-        "node_modules"
-    ],
-    "dependencies": {
-        "knockout": ">=2.3.0"
-    },
-	"repository": {
-        "type": "git",
-        "url": "git://github.com/Cap3/knockout-select.git"
-    },
-	"homepage": "https://github.com/Cap3/knockout-select"
+  "name": "knockout-select",
+  "version": "0.1.2",
+  "main": [
+    "knockoutSelect.js",
+    "style.css"
+  ],
+  "description": "knockout based select options binding with styling options, for single- and multipleselect elements",
+  "keywords": [
+    "css",
+    "less",
+    "web",
+    "styled",
+    "select",
+    "dropdown"
+  ],
+  "license": "MIT",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals"
+  ],
+  "authors": [
+    "Cap3 GmbH - Kalle Ott"
+  ],
+  "ignore": [
+    ".gitignore",
+    "node_modules",
+    "**/.*",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "knockout": ">=2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Cap3/knockout-select.git"
+  },
+  "homepage": "https://github.com/Cap3/knockout-select"
 }
