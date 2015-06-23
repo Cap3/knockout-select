@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         uglify: {
             compressed: {
                 files: {
-                    'knockoutSelect-min.js': 'knockoutSelect.js'
+                    'knockoutSelect.min.js': 'knockoutSelect.js'
                 }
             }
         },
@@ -18,7 +18,7 @@ module.exports = function (grunt) {
                     relativeUrls: true
                 },
                 files: {
-                    'style-min.css': 'style.less'
+                    'style.min.css': 'style.less'
                 }
             },
             debug: {
