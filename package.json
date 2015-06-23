@@ -1,6 +1,6 @@
 {
     "name": "knockout-select",
-    "version": "0.1.3",
+    "version": "0.2.0",
     "main": "knockoutSelect.js",
     "description": "knockout based select options binding with styling options, for single- and multipleselect elements",
     "keywords": [
