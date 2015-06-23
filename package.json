@@ -18,6 +18,7 @@
         "grunt-cli": "^0.1.13",
         "grunt-contrib-less": "^1.0.1",
         "grunt-contrib-uglify": "^0.9.1",
-        "grunt-version": "^1.0.0"
+        "grunt-version": "^1.0.0",
+        "grunt-text-replace": "^0.4.0"
     }
 }

@@ -2,6 +2,7 @@
 module.exports = function (grunt) {
 
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
         uglify: {
             compressed: {
                 files: {
@@ -34,13 +35,24 @@ module.exports = function (grunt) {
             build: {
                 src: ['package.json', 'bower.json']
             }
+        },
+        replace: {
+            readmeVersion: {
+                src: ['README.md'],
+                overwrite: true,
+                replacements: [{
+                    from: /### [0-9]+\.[0-9]+\.[0-9]+/i,
+                    to: '### <%= pkg.version %>'
+                }]
+            }
         }
 
     });
 
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-version');
-    
-    grunt.registerTask('build', ['uglify', 'less', 'version:build:patch']);
+    grunt.loadNpmTasks('grunt-text-replace');
+
+    grunt.registerTask('build', ['uglify', 'less', 'version:build:patch', 'replace:readmeVersion']);
 };
