@@ -8,7 +8,7 @@ support easy migration.
 
 ## Current Version
 
-### 0.1.0
+### 0.1.2
 
 #### Install with bower
 bower install knockoutSelect
