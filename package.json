@@ -1,6 +1,6 @@
 {
     "name": "knockout-select",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "main": "knockoutSelect.js",
     "description": "knockout based select options binding with styling options, for single- and multipleselect elements",
     "keywords": [
@@ -19,6 +19,8 @@
         "grunt-contrib-less": "^1.0.1",
         "grunt-contrib-uglify": "^0.9.1",
         "grunt-version": "^1.0.0",
-        "grunt-text-replace": "^0.4.0"
+        "grunt-text-replace": "^0.4.0",
+        "grunt-ts": "^4.2.0-beta.1",
+        "typescript": "^1.5.0-beta"
     }
 }

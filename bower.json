@@ -1,6 +1,6 @@
 {
   "name": "knockout-select",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": [
     "knockout-select.js",
     "style.css"
@@ -25,6 +25,7 @@
   ],
   "ignore": [
     ".gitignore",
+    ".tscache",
     "node_modules",
     "**/.*",
     "bower_components",

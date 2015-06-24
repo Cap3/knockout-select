@@ -45,14 +45,30 @@ module.exports = function (grunt) {
                     to: '### <%= pkg.version %>'
                 }]
             }
+        },
+        ts: {
+          commonjs : {
+              src: 'knockout-select.ts',
+              options: {
+                  declaration: true,
+                  module: 'commonjs'
+              }
+          },
+          amd: {
+              src: 'knockout-select.ts',
+              options: {
+                  declaration: true,
+                  module: 'amd'
+              }
+          }
         }
-
     });
-
+    
+    grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-version');
     grunt.loadNpmTasks('grunt-text-replace');
-
-    grunt.registerTask('build', ['uglify', 'less', 'version:build:patch', 'replace:readmeVersion']);
+    
+    grunt.registerTask('build', ['ts:amd', 'uglify', 'less', 'version:build:patch', 'replace:readmeVersion']);
 };
