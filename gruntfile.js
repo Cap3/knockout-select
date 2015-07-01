@@ -51,16 +51,29 @@ module.exports = function (grunt) {
               src: 'knockout-select.ts',
               options: {
                   declaration: true,
-                  module: 'commonjs'
+                  module: 'commonjs',
+                  removeComments: false
               }
           },
           amd: {
               src: 'knockout-select.ts',
               options: {
                   declaration: true,
-                  module: 'amd'
+                  module: 'amd',
+                  removeComments: false
               }
           }
+        },
+        jsdoc2md: {
+            doc: {
+                src: "knockout-select.js",
+                dest: "doc/documentation.md",
+                options: {
+                    private: true,
+                    html: true,
+                    stats: false
+                }
+            }
         }
     });
     
@@ -69,6 +82,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-version');
     grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadNpmTasks("grunt-jsdoc-to-markdown");
     
-    grunt.registerTask('build', ['ts:amd', 'uglify', 'less', 'version:build:patch', 'replace:readmeVersion']);
+    grunt.registerTask('build', ['ts:amd', 'uglify', 'less', 'jsdoc2md:doc']);
+    grunt.registerTask('buildVersion', ['build', , 'replace:readmeVersion', 'version:build:patch']);
 };

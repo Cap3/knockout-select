@@ -8,7 +8,7 @@ support easy migration.
 
 ## Current Version
 
-### 0.2.1
+### 0.2.2
 
 #### Install with bower
 bower install knockout-select
@@ -19,7 +19,7 @@ bower install knockout-select
 
 #Usage#
 
- * Include (minified) knockout-select/cap3Options-binding
+ * require (minified) knockout-select/cap3Options-binding
  * Use as custom binding:
 
         <select data-binding="cap3Options: myOptions, cap3Value: myValue></select>
@@ -29,3 +29,6 @@ bower install knockout-select
 * Single selection: http://jsfiddle.net/fp2uno1m/6/
 * Multi selection: http://jsfiddle.net/5u1fntcp/8/
 * Arbitrary JavaScript objects: http://jsfiddle.net/ew8db1to/1/
+
+#[Code Documentation](./doc/documentation.md)#
+
