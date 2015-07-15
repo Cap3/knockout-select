@@ -33,7 +33,9 @@
     "tests"
   ],
   "dependencies": {
-    "knockout": ">=2.3.0"
+    "knockout": "~3.2.0",
+    "requirejs": "~2.1.19",
+    "knockout-select": "~0.2.2"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
+  
   <head>
     <meta charset="UTF-8">
     <title>Knockout-select by Cap3</title>
@@ -8,7 +9,9 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="libs/knockout-select/style.min.css" media="screen">
   </head>
+  
   <body>
     <section class="page-header">
       <h1 class="project-name">Knockout-select</h1>
@@ -17,72 +20,96 @@
       <a href="https://github.com/Cap3/knockout-select/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/Cap3/knockout-select/tarball/master" class="btn">Download .tar.gz</a>
     </section>
-
     <section class="main-content">
       <h1>
-<a id="knockout-select--cap3options" class="anchor" href="#knockout-select--cap3options" aria-hidden="true"><span class="octicon octicon-link"></span></a>knockout-select / cap3Options</h1>
-
-<p>The cap3Options-binding is a drop-down list that can easily be styled 
-for different browsers (IE, Firefox, Chrome).
-The binding conforms to the API of the original knockout options-binding to 
-support easy migration.</p>
-
-<h2>
-<a id="current-version" class="anchor" href="#current-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Current Version</h2>
-
-<h3>
-<a id="022" class="anchor" href="#022" aria-hidden="true"><span class="octicon octicon-link"></span></a>0.2.2</h3>
-
-<h4>
-<a id="install-with-bower" class="anchor" href="#install-with-bower" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install with bower</h4>
-
-<p>bower install knockout-select</p>
-
-<h1>
-<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h1>
-
-<ul>
-<li>Knockout v. 2.3.0</li>
-</ul>
-
-<h1>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
-
-<ul>
-<li>require (minified) knockout-select/cap3Options-binding</li>
-<li>
-<p>Use as custom binding:</p>
-
-<pre><code>&lt;select data-binding="cap3Options: myOptions, cap3Value: myValue&gt;&lt;/select&gt;
-</code></pre>
-</li>
-</ul>
-
-<h1>
-<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h1>
-
-<ul>
-<li>Single selection: <a href="http://jsfiddle.net/fp2uno1m/6/">http://jsfiddle.net/fp2uno1m/6/</a>
-</li>
-<li>Multi selection: <a href="http://jsfiddle.net/5u1fntcp/8/">http://jsfiddle.net/5u1fntcp/8/</a>
-</li>
-<li>Arbitrary JavaScript objects: <a href="http://jsfiddle.net/ew8db1to/1/">http://jsfiddle.net/ew8db1to/1/</a>
-</li>
-</ul>
-
-<h1>
-<a id="code-documentation" class="anchor" href="#code-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="./doc/documentation.md">Code Documentation</a>
-</h1>
-
+        <a id="knockout-select--cap3options" class="anchor" href="#knockout-select--cap3options" aria-hidden="true"><span class="octicon octicon-link"></span></a>knockout-select / cap3Options</h1>
+      <p>The cap3Options-binding is a drop-down list that can easily be styled for different browsers (IE, Firefox, Chrome). The
+        binding conforms to the API of the original knockout options-binding to support easy migration.</p>
+      <h2>
+        <a id="current-version" class="anchor" href="#current-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Current Version</h2>
+      <h3>
+        <a id="022" class="anchor" href="#022" aria-hidden="true"><span class="octicon octicon-link"></span></a>0.2.2</h3>
+      <h4>
+        <a id="install-with-bower" class="anchor" href="#install-with-bower" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install with bower</h4>
+      <p>bower install knockout-select</p>
+      <h1>
+        <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h1>
+      <ul>
+        <li>Knockout v. 2.3.0</li>
+      </ul>
+      <h1>
+        <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
+      <ul>
+        <li>require (minified) knockout-select/cap3Options-binding</li>
+        <li>
+          <p>Use as custom binding:</p>
+          <pre>
+            <code>&lt;select data-binding="cap3Options: myOptions, cap3Value: myValue&gt;&lt;/select&gt;</code>
+          </pre>
+        </li>
+      </ul>
+      <div>
+        <h1>
+          <a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+          Examples
+        </h1>
+        <ul>
+          <li>
+            <h2>Example 01</h2>
+            <p>Single selection mode:
+              <br />
+              <select data-bind="cap3Options: example01.options, cap3Value: example01.selectedValue"></select>
+            </p>
+          </li>
+          <li>
+            <h2>Example 02</h2>
+            <p>Multi selection mode:
+              <br />
+              <select data-bind="cap3Options: example02.options, selectedOptions: example02.selectedValues" multiple="multiple"></select>
+              <br />Selected items:
+              <ul data-bind="foreach: example02.selectedValues">
+                <li data-bind="text: $data"></li>
+              </ul>
+            </p>
+          </li>
+          <li>
+            <h2>Example 03</h2>
+            <p>Example of the original
+              <a href="http://knockoutjs.com/documentation/options-binding.html">options-binding</a>
+              <br />Your country:
+              <select data-bind="cap3Options: example03.availableCountries,
+                       optionsText: 'countryName',
+                       cap3Value: example03.selectedCountry,
+                       optionsCaption: 'Choose...'"></select>
+            </p>
+          </li>
+          <li>
+            <h2>Example 04</h2>
+            <p>Same as example 3, except the select-box expressed as follows:
+              <select data-bind="cap3Options: example03.availableCountries,
+                   optionsText: function(item) {
+                       return item.countryName + ' (pop: ' + item.countryPopulation + ')'
+                   },
+                   cap3Value: example03.selectedCountry,
+                   optionsCaption: 'Choose...'"></select>
+            </p>
+            <div data-bind="visible: example03.selectedCountry">
+              <!-- Appears when you select something -->You have chosen a country with population
+              <span data-bind="text: example03.selectedCountry() ? example03.selectedCountry().countryPopulation : 'unknown'"></span>.
+            </div>
+          </li>
+        </ul>
+      </div>
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/Cap3/knockout-select">Knockout-select</a> is maintained by <a href="https://github.com/Cap3">Cap3</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+        <span class="site-footer-owner">
+          <a href="https://github.com/Cap3/knockout-select">Knockout-select</a> is maintained by <a href="https://github.com/Cap3">Cap3</a>.</span>
+        <span class="site-footer-credits">This page was generated by
+          <a href="https://pages.github.com">GitHub Pages</a>using the
+          <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a>by
+          <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-
     </section>
-
-  
+    <script type="text/javascript" data-main="main.js" src="./libs/requirejs/require.js"></script>
   </body>
-</html>
 
+</html>
