@@ -24,11 +24,7 @@ bower install knockout-select
 
         <select data-binding="cap3Options: myOptions, cap3Value: myValue></select>
 
-#Examples#
-
-* Single selection: http://jsfiddle.net/fp2uno1m/6/
-* Multi selection: http://jsfiddle.net/5u1fntcp/8/
-* Arbitrary JavaScript objects: http://jsfiddle.net/ew8db1to/1/
+#[Examples](http://cap3.github.io/knockout-select/#examples)#
 
 #[Code Documentation](./doc/documentation.md)#
 
